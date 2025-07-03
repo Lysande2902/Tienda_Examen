@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Nucleo.Entidades;
+using System.Collections.Generic;
 
 namespace Infraestructura
 {

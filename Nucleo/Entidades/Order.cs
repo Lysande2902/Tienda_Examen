@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System;
+
 namespace Nucleo.Entidades
 {
     public class Order

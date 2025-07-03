@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configuración de DbContext para Railway (MySQL)
 builder.Services.AddDbContext<TiendaDbContext>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("Railway"), ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("Railway"))));
+    options.UseMySQL(builder.Configuration.GetConnectionString("Railway")));
 
 // Inyección de dependencias
 builder.Services.AddScoped<IRepositorioProducto, RepositorioProducto>();
@@ -47,6 +47,23 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseCors("AllowAll");
+
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path.Value?.ToLower();
+    if (path != null && path.StartsWith("/api/auth/login"))
+    {
+        await next();
+        return;
+    }
+    if (!context.Request.Headers.TryGetValue("X-Token", out var token) || token != "TOKEN_SUPER_SECRETO")
+    {
+        context.Response.StatusCode = 401;
+        await context.Response.WriteAsync("Token inválido o ausente");
+        return;
+    }
+    await next();
+});
 
 app.UseHttpsRedirection();
 

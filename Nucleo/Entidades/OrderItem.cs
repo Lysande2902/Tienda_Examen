@@ -1,3 +1,5 @@
+using Nucleo.Entidades;
+
 namespace Nucleo.Entidades
 {
     public class OrderItem
