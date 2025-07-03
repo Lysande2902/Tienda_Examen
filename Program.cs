@@ -7,7 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configuración de DbContext para Railway (MySQL)
 builder.Services.AddDbContext<TiendaDbContext>(options =>
-    options.UseMySQL(builder.Configuration.GetConnectionString("Railway")));
+{
+    var connectionString = builder.Configuration.GetConnectionString("Railway")
+        ?? throw new InvalidOperationException("La cadena de conexión 'Railway' no está configurada.");
+    options.UseMySQL(connectionString);
+});
 
 // Inyección de dependencias
 builder.Services.AddScoped<IRepositorioProducto, RepositorioProducto>();
@@ -27,15 +31,64 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Swagger
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
-// Add services to the container.
+// JWT Authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = "JwtBearer";
+    options.DefaultChallengeScheme = "JwtBearer";
+})
+.AddJwtBearer("JwtBearer", options =>
+{
+    var jwtSettings = builder.Configuration.GetSection("Jwt");
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
+            System.Text.Encoding.UTF8.GetBytes(
+                jwtSettings["Key"] ?? throw new InvalidOperationException("La clave JWT 'Key' no está configurada en appsettings.json.")
+            )
+        )
+    };
+});
+
+
+// Swagger con soporte para JWT en Swagger UI
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Tienda API", Version = "v1" });
+    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Ingrese el token JWT como: Bearer {token}"
+    });
+    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 builder.Services.AddControllers();
-
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -48,22 +101,8 @@ if (app.Environment.IsDevelopment())
 }
 app.UseCors("AllowAll");
 
-app.Use(async (context, next) =>
-{
-    var path = context.Request.Path.Value?.ToLower();
-    if (path != null && path.StartsWith("/api/auth/login"))
-    {
-        await next();
-        return;
-    }
-    if (!context.Request.Headers.TryGetValue("X-Token", out var token) || token != "TOKEN_SUPER_SECRETO")
-    {
-        context.Response.StatusCode = 401;
-        await context.Response.WriteAsync("Token inválido o ausente");
-        return;
-    }
-    await next();
-});
+
+app.UseAuthentication();
 
 app.UseHttpsRedirection();
 

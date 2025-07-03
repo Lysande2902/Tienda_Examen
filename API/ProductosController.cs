@@ -1,11 +1,13 @@
 using Aplicacion;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Nucleo.Entidades;
 
 namespace API
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class ProductosController : ControllerBase
     {
         private readonly ServiciosProducto _servicio;
