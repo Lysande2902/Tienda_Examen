@@ -1,0 +1,61 @@
+Prompts.txt
+
+Herramienta: Cursor
+
+1Prompts: Quería una WebAPI con arquitectura Onion (capas: Core/Núcleo, Infraestructura, Aplicación, API), 
+conexión a Railway, gestión de productos y órdenes, y reglas de integridad para los pedidos.
+
+Justificación:Se creó la estructura de carpetas y proyectos siguiendo la arquitectura Onion, 
+separando entidades, lógica de negocio, acceso a datos y controladores. 
+Se preparó todo para que la conexión a la base de datos Railway (MySQL) fuera sencilla y centralizada.
+
+2Prompt: La base de datos tuviera las tablas Product, Order y OrderItem, con los campos y relaciones exactos.
+
+Justificación: Se creó la base de datos con las tablas Product, Order y 
+rderItem, con los campos y relaciones exactos.
+
+3Prompt: Proporciono la cadena de conexión a la base de datos Railway. Siendo la cadena de conexión: 
+ "Server=remotemysql.com;Port=3306;Database=3306;Uid=3306;Pwd=3306;"
+
+Justificación: Se actualizó el archivo de configuración (appsettings.json) y el 
+código de inicio (Program.cs) para usar la cadena y el proveedor correctos, 
+asegurando compatibilidad total con tu base de datos en Railway.
+
+4Prompt: Se pidió la paginación en los endpoints de productos y órdenes.
+
+Justificación: Se actualizó el código de inicio (Program.cs) para usar la 
+paginación en los endpoints de productos y órdenes.
+
+5Prompt: Se pidió que los endpoints de productos y órdenes devuelvan los datos en formato JSON.
+
+Justificación: Se actualizó el código de inicio (Program.cs) para usar el 
+formato JSON en los endpoints de productos y órdenes.
+
+6Prompt:Se pidió un endpoint de login que devuelva un token fijo si el usuario y contraseña son correctos, y que todas las rutas (excepto login) requieran ese token en un header personalizado.
+
+Justificación: Se actualizó el código de inicio (Program.cs) para que el usuario pueda logearme y obtener un token, y luego ponerlo en el Authorize.
+
+Herramienta: Copilot
+
+1Prompt: Quiero que yo pueda logearme y obtener un token, y luego ponerlo en el Authorize, 
+para poder usar los metodos CRUD en los endpoints de productos y órdenes.
+
+Justificación: Se actualizó el código de inicio (Program.cs) para que el usuario pueda logearme y obtener un token, y luego ponerlo en el Authorize.
+
+2Prompt: okey, revisa que todo esté correcto.
+
+Justificación: Simplemente se revisó que todo esté correcto.
+
+3Prompt: okey, la parte de donde me genera el token está bien, pero cuando necesio hacer un GET, no me deja (no me autoriza), necesito que implementes, y pueda acceder a esos métodos una vez yo esté logeado.
+
+Justificación: Se hizo la implementación de la autenticación.
+
+4Prompt: Si ingreso un número negativo en los métodos, implementa exepciones.
+
+Justificación: Se priorizo la parte de la excepción, es decir, que si ingreso un número negativo, se lance una excepción.
+No hay errores 400, hay errores con mensaje personalizado.
+
+5Prompt: Oke, ahora que también tenga esta exepción de que si pone algo con espacio 
+ pone algo acepte, pero si son campos vacíos, entonces lance exepciones.
+
+Justificación: Se prioriza la parte de que cuando se ponga un campo vacío lance una excepción.
