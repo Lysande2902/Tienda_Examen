@@ -20,12 +20,12 @@ builder.Services.AddScoped<IRepositorioOrderItem, RepositorioOrderItem>();
 builder.Services.AddScoped<ServiciosProducto>();
 builder.Services.AddScoped<ServiciosOrden>();
 
-// CORS
+// CORS: Solo permite la IP 187.155.101.200
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
+    options.AddPolicy("AllowSpecificIp", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins("http://187.155.101.200", "https://187.155.101.200")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -114,8 +114,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseCors("AllowAll");
-
+// Aplica la política CORS solo para la IP específica
+app.UseCors("AllowSpecificIp");
 
 app.UseAuthentication();
 
