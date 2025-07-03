@@ -1,12 +1,17 @@
 using System.Collections.Generic;
 using System;
 
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Nucleo.Entidades
 {
+    [Table("orders")]
     public class Order
     {
+        [Key]
         public int ID_Order { get; set; }
-        public string Estado { get; set; } // Pendiente, Pagado, Enviado
+        public string Estado { get; set; } = "Pendiente"; // Pendiente, Pagado, Enviado
         public List<OrderItem> Items { get; set; } = new List<OrderItem>();
 
         public bool PuedeModificarItems()

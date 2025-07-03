@@ -20,6 +20,8 @@ namespace API
         [HttpGet]
         public IActionResult Get(int page = 1, int pageSize = 10)
         {
+            if (page < 1 || pageSize < 1)
+                return BadRequest("Los parámetros 'page' y 'pageSize' deben ser positivos.");
             var productos = _servicio.ObtenerTodos().Skip((page - 1) * pageSize).Take(pageSize);
             return Ok(productos);
         }
@@ -27,47 +29,14 @@ namespace API
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
+            if (id < 0)
+                return BadRequest("El id debe ser positivo.");
             var prod = _servicio.ObtenerPorId(id);
             if (prod == null)
                 return NotFound();
             return Ok(prod);
         }
 
-        [HttpPost]
-        public IActionResult Post([FromBody] Product producto)
-        {
-            try
-            {
-                _servicio.Agregar(producto);
-                return CreatedAtAction(nameof(Get), new { id = producto.ID_Producto }, producto);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Product producto)
-        {
-            if (id != producto.ID_Producto)
-                return BadRequest();
-            try
-            {
-                _servicio.Actualizar(producto);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
-        {
-            _servicio.Eliminar(id);
-            return NoContent();
-        }
+        // Métodos POST, PUT y DELETE eliminados para cumplir la regla de negocio: no modificar productos
     }
 }
